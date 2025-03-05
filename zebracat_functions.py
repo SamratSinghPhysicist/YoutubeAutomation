@@ -22,23 +22,39 @@ def create_driver():
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--dns-prefetch-disable')
     chrome_options.add_argument('--disable-extensions')
-    # Add realistic browser characteristics
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--start-maximized')
     chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    # Remove automation flags
     chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
     chrome_options.add_experimental_option('useAutomationExtension', False)
     
     try:
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-        # Execute CDP commands to modify browser characteristics
-        driver.execute_cdp_cmd('Network.setUserAgentOverride', {
-            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
-        })
-        driver.set_page_load_timeout(60)  # Increased timeout
-        return driver
+        try:
+            print("Installing ChromeDriver...")
+            driver_path = ChromeDriverManager().install()
+            print(f"ChromeDriver installed at: {driver_path}")
+            service = Service(driver_path)
+            print("Service created")
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            print("Driver created")
+            driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+            })
+            driver.set_page_load_timeout(60)
+            return driver
+        except:
+            # For my win10 pc in which chromedriver path was not getting selected automatically
+            driver_path = "C:\\Users\\Samrat Singh\\.wdm\\drivers\\chromedriver\\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
+            print(f"Using ChromeDriver at: {driver_path}")
+            service = Service(executable_path=driver_path)
+            print("Service created")
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            print("Driver created")
+            driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+            })
+            driver.set_page_load_timeout(60)
+            return driver
     except Exception as e:
         print(f"Driver creation error: {str(e)}")
         raise Exception(f"Failed to create driver: {str(e)}")
@@ -399,8 +415,8 @@ def create_video_zebracat(email, video_title):
         except:
             pass  # Checkbox not found, proceed without action
 
-        # Step 20: Wait 10 minutes and Click "Export"
-        time.sleep(600)
+        # Step 20: Wait 5 minutes and Click "Export"
+        time.sleep(300)
         export_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Export')]")
         export_button.click()
 
@@ -408,8 +424,8 @@ def create_video_zebracat(email, video_title):
         prepare_video_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Prepare Video')]")
         prepare_video_button.click()
 
-        # Step 22: Wait 10 Minutes for Video Processing
-        time.sleep(600)
+        # Step 22: Wait 5 Minutes for Video Processing
+        time.sleep(300)
 
         # Step 23: Click "More" and Select "Download"
         more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-fPgHrj')]")
@@ -419,8 +435,8 @@ def create_video_zebracat(email, video_title):
         )
         download_option.click()
 
-        # Step 24: Wait 15 Minutes for Download Preparation
-        time.sleep(900)
+        # Step 24: Wait 5 Minutes for Download Preparation
+        time.sleep(300)
 
         # Step 25: Close the Browser
         driver.quit()

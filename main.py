@@ -15,7 +15,7 @@ def main():
             if account_maker_zebracat(email):
                 time.sleep(5)
                 if login_zebracat(email):
-                    accounts_data[email] = "Study@123"
+                    accounts_data[f"{email}"] = "Study@123"
                     with open("zebracat_accounts_data.json", "w") as json_file:
                         json.dump(accounts_data, json_file, indent=4)
                     print(f"Account {email} successfully set up and saved")
