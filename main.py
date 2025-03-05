@@ -1,4 +1,3 @@
-import requests
 import json
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -8,8 +7,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from bs4 import BeautifulSoup
-import urllib.parse
-import concurrent.futures
 import urllib3
 from webdriver_manager.chrome import ChromeDriverManager
 
