@@ -5,15 +5,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import os
 from bs4 import BeautifulSoup
 import urllib3
 from webdriver_manager.chrome import ChromeDriverManager
-
 from gmail_generator import get_inbox, get_message
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def create_driver():
+def create_driver(download_dir=None):
     """Initialize Selenium WebDriver with Chrome options."""
     chrome_options = Options()
     chrome_options.add_argument('--no-sandbox')
@@ -27,7 +27,16 @@ def create_driver():
     chrome_options.add_argument('--disable-blink-features=AutomationControlled')
     chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
     chrome_options.add_experimental_option('useAutomationExtension', False)
-    
+
+    # Set download directory if provided
+    if download_dir:
+        chrome_options.add_experimental_option("prefs", {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True
+        })
+
     try:
         try:
             print("Installing ChromeDriver...")
@@ -43,7 +52,7 @@ def create_driver():
             driver.set_page_load_timeout(60)
             return driver
         except:
-            # For my win10 pc in which chromedriver path was not getting selected automatically
+            # Fallback for specific path
             driver_path = "C:\\Users\\Samrat Singh\\.wdm\\drivers\\chromedriver\\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
             print(f"Using ChromeDriver at: {driver_path}")
             service = Service(executable_path=driver_path)
@@ -59,25 +68,19 @@ def create_driver():
         print(f"Driver creation error: {str(e)}")
         raise Exception(f"Failed to create driver: {str(e)}")
 
-
 def get_verification_link_zebracat(message_content):
     """Extract verification link from email content by finding the anchor tag with specific text."""
     try:
-        # If message_content is a dict, extract the 'content' field
         if isinstance(message_content, dict) and 'content' in message_content:
             message_content = message_content['content']
         
-        # Parse the HTML content
         soup = BeautifulSoup(message_content, 'html.parser')
         
-        # Define a function to find the <a> tag containing "Confirm Email Address"
         def contains_verification_text(tag):
             return tag.name == 'a' and 'Confirm Email Address' in tag.text
         
-        # Find the tag
         verification_tag = soup.find(contains_verification_text)
         
-        # Check if the tag exists and has an href attribute
         if verification_tag and 'href' in verification_tag.attrs:
             return verification_tag['href']
         
@@ -136,8 +139,6 @@ def register_zebracat(email):
                 print(f"Waiting for verification email:")
                 time.sleep(30)
                 all_messages = get_inbox(email)
-        
-        
     except Exception as e:
         print(f"Error during registration of account {email} on zebracat.ai: {e}")
         return False
@@ -193,7 +194,6 @@ def initial_setup_zebracat(email):
         time.sleep(10)
         print(f"Initial setup successful for account {email} on zebracat.ai")
         return True
-
     except Exception as e:
         print(f"Error during initial setup of account {email} on zebracat.ai: {e}")
         return False
@@ -201,10 +201,8 @@ def initial_setup_zebracat(email):
         if driver:
             driver.quit()
 
-
 def account_maker_zebracat(email):
     print(f"\nProcessing account {email}")
-
     print(f"Trying to register the account: {email} on zebracat.ai")
     register_zebracat(email)
     print(f"Registration successful for the account: {email} on zebracat.ai")
@@ -212,10 +210,8 @@ def account_maker_zebracat(email):
     print(f"Trying to perform initial setup for the account: {email} on zebracat.ai")
     initial_setup_zebracat(email)
     print(f"Initial setup successful for the account: {email} on zebracat.ai")
-
     print(f"\nProcess completed for the account: {email}")
     print(f"Successfully Set Up the account: {email} on zebracat.ai")
-
 
 def login_zebracat(email):
     """Log in to a zebracat.ai account."""
@@ -249,7 +245,6 @@ def login_zebracat(email):
         
         print("Login successful")
         return True
-
     except Exception as e:
         print(f"Error during login of account {email} on zebracat.ai: {e}")
         return False
@@ -257,12 +252,33 @@ def login_zebracat(email):
         if driver:
             driver.quit()
 
+def rename_downloaded_file(download_dir, new_name="downloaded_video.mp4"):
+    """Rename the most recently downloaded .mp4 file."""
+    files = os.listdir(download_dir)
+    video_files = [f for f in files if f.endswith(".mp4")]
+    
+    if not video_files:
+        raise FileNotFoundError("No .mp4 file found in the download directory!")
+    elif len(video_files) > 1:
+        print("Warning: Multiple .mp4 files found. Renaming the latest one.")
+        video_files.sort(key=lambda x: os.path.getmtime(os.path.join(download_dir, x)), reverse=True)
+    
+    original_file = video_files[0]
+    original_path = os.path.join(download_dir, original_file)
+    new_path = os.path.join(download_dir, new_name)
+    
+    if os.path.exists(new_path):
+        os.remove(new_path)  # Remove existing file with the same name
+    os.rename(original_path, new_path)
+    print(f"Renamed '{original_file}' to '{new_name}'")
+    return new_path
+
 def create_video_zebracat(email, video_title):
-
     driver = None
+    script_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of this script
     try:
-        driver = create_driver()
-
+        # Create driver with custom download directory
+        driver = create_driver(download_dir=script_dir)
         print(f"Trying to login with Email: {email} on zebracat.ai")
         
         driver.get("https://studio.zebracat.ai/login/")
@@ -289,31 +305,29 @@ def create_video_zebracat(email, video_title):
         time.sleep(10)
         
         print(f"Login successful with account {email} on zebracat.ai")
-
-
         print(f"Trying to create video with Email: {email} on zebracat.ai on the topic: {video_title}")
 
-        # Step 2: Navigate to the Zebracat Website
+        # Navigate to the Zebracat studio page
         driver.get("https://studio.zebracat.ai/")
 
-        # Step 3: Click on "Create Video" Button
+        # Click on "Create Video" Button
         create_video_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Create Video')]"))
         )
         create_video_button.click()
 
-        # Step 4: Wait for and Select "Hyperrealism"
+        # Select "Hyperrealism"
         hyperrealism_div = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'sc-iA-DsXs') and contains(., 'Hyperrealism')]"))
         )
         hyperrealism_div.click()
 
-        # Step 5: Wait 2 Seconds and Click "Next Step"
+        # Wait 2 Seconds and Click "Next Step"
         time.sleep(2)
         next_step_button = driver.find_element(By.ID, ":r0:")
         next_step_button.click()
 
-        # Step 6: Select "Fun Facts" from Dropdown
+        # Select "Fun Facts" from Dropdown
         time.sleep(1)
         story_style_combobox = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'Select your story style')]"))
@@ -325,33 +339,33 @@ def create_video_zebracat(email, video_title):
         )
         fun_facts_option.click()
 
-        # Step 7: Enter Text into Textarea
+        # Enter Text into Textarea
         time.sleep(1)
         textarea = driver.find_element(By.XPATH, "//textarea[@placeholder='Example: motivational video encouraging a more healthy and active lifestyle.']")
         textarea.clear()
         textarea.send_keys(f"Create a youtube shorts on the topic: {video_title}. Make sure that first 5 seconds are very very engaging.")
 
-        # Step 8: Click the Checkbox
+        # Click the Checkbox
         time.sleep(1)
         checkbox = driver.find_element(By.XPATH, "//input[@type='checkbox']")
         checkbox.click()
 
-        # Step 9: Select 9:16 Aspect Ratio
+        # Select 9:16 Aspect Ratio
         time.sleep(1)
         aspect_ratio_div = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-dOvA-dm') and contains(., '9:16')]")
         aspect_ratio_div.click()
 
-        # Step 10: Click on the Slider Mark
+        # Click on the Slider Mark
         time.sleep(1)
         slider_mark = driver.find_element(By.XPATH, "//span[contains(@class, 'MuiSlider-mark') and contains(@style, 'left: 6.89655%')]")
         slider_mark.click()
 
-        # Step 11: Click "Change" Button
+        # Click "Change" Button
         time.sleep(1)
         change_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Change')]")
         change_button.click()
 
-        # Step 13: Select "Hindi" Language
+        # Select "Hindi" Language
         time.sleep(60)
         language_combobox = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'English')]")
         language_combobox.click()
@@ -360,7 +374,7 @@ def create_video_zebracat(email, video_title):
         )
         hindi_option.click()
 
-        # Step 14: Select "Male" Voice Gender
+        # Select "Male" Voice Gender
         time.sleep(5)
         voice_gender_combobox = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'All')]")
         voice_gender_combobox.click()
@@ -369,12 +383,12 @@ def create_video_zebracat(email, video_title):
         )
         male_option.click()
 
-        # Step 15: Select "Raju - Relatable Hindi Voice"
+        # Select "Raju - Relatable Hindi Voice"
         time.sleep(10)
         voice_div = driver.find_element(By.XPATH, "//div[contains(@class, 'py6 main') and contains(., 'Raju - Relatable Hindi Voice')]")
         voice_div.click()
 
-        # Step 16: Click "Select" Button
+        # Click "Select" Button
         time.sleep(5)
         select_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Select')]")
         select_button.click()
@@ -391,22 +405,21 @@ def create_video_zebracat(email, video_title):
         )
         energetic_option.click()
 
-        # Step 17: Click "Next Step" After 1 Second
+        # Click "Next Step" After 1 Second
         time.sleep(5)
-
         next_step_button_2 = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Next Step')]"))
         )
         next_step_button_2.click()
 
-        # Step 18: Wait 20 Seconds and Click "Generate Video"
+        # Wait 20 Seconds and Click "Generate Video"
         time.sleep(20)
         generate_video_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Generate Video')]"))
         )
         generate_video_button.click()
 
-        # Step 19: Check for Checkbox and Handle
+        # Check for Checkbox and Handle
         time.sleep(10)
         try:
             checkbox_2 = driver.find_element(By.XPATH, "//input[@type='checkbox' and @class='sc-dChVcU cwixky PrivateSwitchBase-input']")
@@ -415,19 +428,19 @@ def create_video_zebracat(email, video_title):
         except:
             pass  # Checkbox not found, proceed without action
 
-        # Step 20: Wait 5 minutes and Click "Export"
+        # Wait 5 minutes and Click "Export"
         time.sleep(300)
         export_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Export')]")
         export_button.click()
 
-        # Step 21: Click "Prepare Video"
+        # Click "Prepare Video"
         prepare_video_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Prepare Video')]")
         prepare_video_button.click()
 
-        # Step 22: Wait 5 Minutes for Video Processing
+        # Wait 5 Minutes for Video Processing
         time.sleep(300)
 
-        # Step 23: Click "More" and Select "Download"
+        # Click "More" and Select "Download"
         more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-fPgHrj')]")
         more_icon.click()
         download_option = WebDriverWait(driver, 10).until(
@@ -435,12 +448,14 @@ def create_video_zebracat(email, video_title):
         )
         download_option.click()
 
-        # Step 24: Wait 5 Minutes for Download Preparation
+        # Wait 5 Minutes for Download Preparation
         time.sleep(300)
 
-        # Step 25: Close the Browser
-        driver.quit()
-    
+        # Rename the downloaded file
+        video_path = rename_downloaded_file(script_dir)
+        print(f"Video created and downloaded as: {video_path}")
+        return True
+
     except Exception as e:
         print(f"Error creating video with account {email} on zebracat.ai on the topic {video_title}: {e}")
         return False
