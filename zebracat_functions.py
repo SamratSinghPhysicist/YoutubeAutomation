@@ -16,6 +16,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def create_driver(download_dir=None):
     """Initialize Selenium WebDriver with Chrome options."""
     chrome_options = Options()
+    options.add_argument('--headless')   # Headless mode
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--ignore-certificate-errors')
@@ -107,7 +108,7 @@ def register_zebracat(email):
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
-        fullname_input = WebDriverWait(driver, 10).until(
+        fullname_input = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.NAME, "fullname"))
         )
         fullname_input.send_keys("King Sam")
@@ -130,9 +131,8 @@ def register_zebracat(email):
                         message_content = get_message(message_id)
                         verification_link = get_verification_link_zebracat(message_content)
                         driver.get(verification_link)
-                        time.sleep(10)
+                        time.sleep(7)
                         print("Registration successful")
-                        time.sleep(10)
                         return True
             except Exception as e:
                 print(f"Error getting verification message content: {str(e)}")
@@ -155,7 +155,7 @@ def initial_setup_zebracat(email):
         
         driver.get("https://studio.zebracat.ai/login/")
         
-        email_input = WebDriverWait(driver, 10).until(
+        email_input = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.NAME, "email"))
         )
         email_input.send_keys(email)
@@ -164,7 +164,7 @@ def initial_setup_zebracat(email):
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
-        password_input = WebDriverWait(driver, 10).until(
+        password_input = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.NAME, "password"))
         )
         password_input.send_keys("Study@123")
@@ -191,7 +191,7 @@ def initial_setup_zebracat(email):
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit')]"))
         ).click()
 
-        time.sleep(10)
+        time.sleep(7)
         print(f"Initial setup successful for account {email} on zebracat.ai")
         return True
     except Exception as e:
@@ -279,11 +279,13 @@ def create_video_zebracat(email, video_title):
     try:
         # Create driver with custom download directory
         driver = create_driver(download_dir=script_dir)
+
+        #Logging in on zebracat.ai
         print(f"Trying to login with Email: {email} on zebracat.ai")
         
         driver.get("https://studio.zebracat.ai/login/")
 
-        email_input = WebDriverWait(driver, 10).until(
+        email_input = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.NAME, "email"))
         )
         email_input.send_keys(email)
@@ -292,7 +294,7 @@ def create_video_zebracat(email, video_title):
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
-        password_input = WebDriverWait(driver, 10).until(
+        password_input = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.NAME, "password"))
         )
         password_input.send_keys("Study@123")
@@ -302,7 +304,6 @@ def create_video_zebracat(email, video_title):
 
         time.sleep(10)
         driver.get("https://studio.zebracat.ai/")
-        time.sleep(10)
         
         print(f"Login successful with account {email} on zebracat.ai")
         print(f"Trying to create video with Email: {email} on zebracat.ai on the topic: {video_title}")
@@ -311,13 +312,15 @@ def create_video_zebracat(email, video_title):
         driver.get("https://studio.zebracat.ai/")
 
         # Click on "Create Video" Button
-        create_video_button = WebDriverWait(driver, 10).until(
+        create_video_button = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Create Video')]"))
         )
         create_video_button.click()
 
+        print("Adding video settings ...")
+
         # Select "Hyperrealism"
-        hyperrealism_div = WebDriverWait(driver, 10).until(
+        hyperrealism_div = WebDriverWait(driver, 20).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'sc-iA-DsXs') and contains(., 'Hyperrealism')]"))
         )
         hyperrealism_div.click()
@@ -384,7 +387,7 @@ def create_video_zebracat(email, video_title):
         male_option.click()
 
         # Select "Raju - Relatable Hindi Voice"
-        time.sleep(10)
+        time.sleep(7)
         voice_div = driver.find_element(By.XPATH, "//div[contains(@class, 'py6 main') and contains(., 'Raju - Relatable Hindi Voice')]")
         voice_div.click()
 
@@ -399,14 +402,14 @@ def create_video_zebracat(email, video_title):
             EC.element_to_be_clickable((By.XPATH, "//div[@role='combobox' and contains(text(), 'Happy')]"))
         )
         combobox.click()
-        time.sleep(5)
+        time.sleep(2)
         energetic_option = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//li[@data-value='Energetic']"))
         )
         energetic_option.click()
 
-        # Click "Next Step" After 1 Second
-        time.sleep(5)
+        # Click "Next Step" After 3 Second
+        time.sleep(3)
         next_step_button_2 = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Next Step')]"))
         )
@@ -420,7 +423,7 @@ def create_video_zebracat(email, video_title):
         generate_video_button.click()
 
         # Check for Checkbox and Handle
-        time.sleep(10)
+        time.sleep(30)
         try:
             checkbox_2 = driver.find_element(By.XPATH, "//input[@type='checkbox' and @class='sc-dChVcU cwixky PrivateSwitchBase-input']")
             checkbox_2.click()
@@ -429,18 +432,24 @@ def create_video_zebracat(email, video_title):
             pass  # Checkbox not found, proceed without action
 
         # Wait 5 minutes and Click "Export"
+        print("Video Generation started ...")
         time.sleep(300)
+        print("Video generation done. \n Trying to export and process the video for download ...")
         export_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Export')]")
         export_button.click()
-
         # Click "Prepare Video"
         prepare_video_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Prepare Video')]")
         prepare_video_button.click()
 
         # Wait 5 Minutes for Video Processing
+        print("Video exporting and processing in 720p started ...")
         time.sleep(300)
 
+        print("Video processing Done")
+
         # Click "More" and Select "Download"
+
+        print("Downloading the video ...")
         more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-fPgHrj')]")
         more_icon.click()
         download_option = WebDriverWait(driver, 10).until(
@@ -450,7 +459,7 @@ def create_video_zebracat(email, video_title):
 
         # Wait 5 Minutes for Download Preparation
         time.sleep(300)
-
+        
         # Rename the downloaded file
         video_path = rename_downloaded_file(script_dir)
         print(f"Video created and downloaded as: {video_path}")
