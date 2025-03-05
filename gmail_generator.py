@@ -2,7 +2,7 @@
 import requests
 import json
 
-
+"""
 def generate_bulk_gmail():
     url = "https://gmailnator.p.rapidapi.com/bulk-emails"
 
@@ -21,7 +21,22 @@ def generate_bulk_gmail():
     data = response.json()
     with open('emails.json', 'w') as f:
         json.dump(data, f, indent=2)
+"""
+def generate_gmail():
 
+    url = "https://gmailnator.p.rapidapi.com/generate-email"
+
+    payload = { "options": [3] }
+    headers = {
+    	"x-rapidapi-key": "29bf2dc8b5msh5daf33e76ed405ap1e23e8jsnb6f7a4034e9e",
+    	"x-rapidapi-host": "gmailnator.p.rapidapi.com",
+    	"Content-Type": "application/json"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    return response.json()["email"]        
+        
 def get_inbox(email):
     url = "https://gmailnator.p.rapidapi.com/inbox"
 
@@ -54,3 +69,14 @@ def get_message(message_id):
 
     print(response.json())
     return response.json()
+
+
+def get_email_accounts():
+    """Read email list from gmails.txt."""
+    try:
+        with open("gmails.txt", "r") as file:
+            emails = file.read().splitlines()
+        return emails
+    except Exception as e:
+        print(f"Error reading email file: {e}")
+        return []
