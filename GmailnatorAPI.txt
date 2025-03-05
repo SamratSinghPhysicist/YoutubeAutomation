@@ -1,0 +1,59 @@
+#Inbox
+import http.client
+
+conn = http.client.HTTPSConnection("gmailnator.p.rapidapi.com")
+
+payload = "{\"email\":\"demo@gmailnator.com\",\"limit\":10}"
+
+headers = {
+    'x-rapidapi-key': "29bf2dc8b5msh5daf33e76ed405ap1e23e8jsnb6f7a4034e9e",
+    'x-rapidapi-host': "gmailnator.p.rapidapi.com",
+    'Content-Type': "application/json"
+}
+
+conn.request("POST", "/inbox", payload, headers)
+
+res = conn.getresponse()
+data = res.read()
+
+print(data.decode("utf-8"))
+Example Response
+[
+  {
+    "date": 1615954059,
+    "from": "Hey <gfazhsc@gmailnator.com>",
+    "id": "eyJpdiI6IlhoL1JmMWsxeENYd1o4RFgwRmY3MVE9PSIsInZhbHVlIjoiMVRwOTdiTFJXM1VLaDRYbkV2ODJxMVRkV2pPcUJSTlFSU01rWE1tZWU0Mm95Zm5maUlvMG5aSko3aG5kcGNIUmFkenlOdUtyN1QyN24zSEVteVRKREE9PSIsIm1hYyI6IjdiYTcwMjdhNzc0OTdkNzM1MWM2MTNhODdkNjFlMTFmMmQ2ZiODZmZjNkYjg5ZTgifQ==",
+    "subject": "Sample"
+  },
+  {
+    "date": 1615955059,
+    "from": "Test<gfazhsc@gmailnator.com>",
+    "id": "eyJpdiI6IlhoL1JmMWsxeENYd1o4RFgwRmY3MVE9PSIsInZhbHVlIjoiMVRwOTdiTFJXM1VLaDRYbkV2ODJxMVRkV2pPcUJSTlFSU01rWE1tZWU0Mm95Zm5maUlvMG5aSko3aG5kcGNIUmFkenlOdUtyN1QyN24zSEVteVRKREE9PSIsIm1hYyI6IjdiYTcwMjdhNzc0OTdkNzM1MWM2MTNhODdkNjFlMTFmMmQ2ZiODZmZjNkYjg5ZTgifQ==",
+    "subject": "Sample 2"
+  }
+]
+
+
+#Message
+import requests
+
+url = "https://gmailnator.p.rapidapi.com/messageid"
+
+querystring = {"id":"eyJpdiI6IlhtajhrNmFsL045Ni9JTjBSUzhwYWc9PSIsInZhbHVlIjoia0dIUW9BUTZvb0dWa1FUVjBqK2VkRTdYZWRzN2JFZklSbU16eFAxRHRPRFhjbzJUTkpIWjkzc0FTVG1pdUJ3SmxVdithTWl4dExkTGVnRTBDQkh0UlE9PSIsIm1hYyI6IjQ5ZmM4NTBlODVhZjhkZWFlNDE5MmVkNzEwZjhkMWUzMjllZWVlZjcyYjRmNTE1NGUyNTgyY2JkY2Q3MzdkYmQifQ"}
+
+headers = {
+	"x-rapidapi-key": "29bf2dc8b5msh5daf33e76ed405ap1e23e8jsnb6f7a4034e9e",
+	"x-rapidapi-host": "gmailnator.p.rapidapi.com"
+}
+
+response = requests.get(url, headers=headers, params=querystring)
+
+print(response.json())
+
+Example Response
+{
+  "content": "Test API ",
+  "date": 1615954059,
+  "from": "Hey <testapi@gmailnator.com>",
+  "subject": "API SAMPLE"
+}
