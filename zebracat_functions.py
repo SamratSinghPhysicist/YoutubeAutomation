@@ -16,7 +16,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def create_driver(download_dir=None):
     """Initialize Selenium WebDriver with Chrome options."""
     chrome_options = Options()
-    options.add_argument('--headless')   # Headless mode
+    #chrome_options.add_argument('--headless')   # Headless mode
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--ignore-certificate-errors')
@@ -119,7 +119,7 @@ def register_zebracat(email):
         submit_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
         submit_button.click()
 
-        time.sleep(30)
+        time.sleep(60)
         
         for _ in range(20):
             all_messages = get_inbox(email)
@@ -137,7 +137,7 @@ def register_zebracat(email):
             except Exception as e:
                 print(f"Error getting verification message content: {str(e)}")
                 print(f"Waiting for verification email:")
-                time.sleep(30)
+                time.sleep(60)
                 all_messages = get_inbox(email)
     except Exception as e:
         print(f"Error during registration of account {email} on zebracat.ai: {e}")
@@ -204,14 +204,15 @@ def initial_setup_zebracat(email):
 def account_maker_zebracat(email):
     print(f"\nProcessing account {email}")
     print(f"Trying to register the account: {email} on zebracat.ai")
-    register_zebracat(email)
-    print(f"Registration successful for the account: {email} on zebracat.ai")
+    if register_zebracat(email):
+        print(f"Registration successful for the account: {email} on zebracat.ai")
     
     print(f"Trying to perform initial setup for the account: {email} on zebracat.ai")
-    initial_setup_zebracat(email)
-    print(f"Initial setup successful for the account: {email} on zebracat.ai")
-    print(f"\nProcess completed for the account: {email}")
-    print(f"Successfully Set Up the account: {email} on zebracat.ai")
+    if initial_setup_zebracat(email):
+                              
+        print(f"Initial setup successful for the account: {email} on zebracat.ai")
+        print(f"\nProcess completed for the account: {email}")
+        print(f"Successfully Set Up the account: {email} on zebracat.ai")
 
 def login_zebracat(email):
     """Log in to a zebracat.ai account."""

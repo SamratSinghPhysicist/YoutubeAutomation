@@ -2,7 +2,8 @@ import json
 from gmail_generator import generate_gmail
 from zebracat_functions import account_maker_zebracat, login_zebracat, create_video_zebracat
 import time
-
+import os
+import pickle
 
 def upload_to_youtube(video_file, title, description="Don't forget to like and subscribe", tags=None, privacyStatus="public"):
     """
@@ -108,10 +109,19 @@ def main(video_title):
         print(f"Successfully processed {len(accounts_data)} accounts")
 
     #Uploading the video to youtube.
-    try:
-        upload_to_youtube("downloaded_video.mp4", video_title)
-    except Exception as e:
-        print(f"Error in uploading video to youtube: {e}")
+    print("Uploading video to YouTube...")
+    response = upload_to_youtube(video_file = "downloaded_video.mp4", title= video_title)
+    if response:
+        print("Video uploaded successfully!")
+        print("Response snippet:", response.get("snippet", {}))
+        print("Deleting the local video files")
+        try:
+            os.remove("downloaded_video.mp4")
+            print("Local video file (downloaded_video.mp4) deleted.")
+        except Exception as e:
+            print("Failed to delete local video file (downloaded_video.mp4):", e)
+    else:
+        print("Video upload failed. Local video file (downloaded_video.mp4) retained.")
 
 if __name__ == "__main__":
     video_title = "Space mei diamond rain!"
