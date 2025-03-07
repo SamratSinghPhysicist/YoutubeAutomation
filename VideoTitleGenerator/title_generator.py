@@ -1,27 +1,17 @@
 import os
-import google.oauth2.credentials
-import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from datetime import datetime, timedelta
-import json
 import re
 from collections import Counter
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-import requests
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
 import pickle
-import time
 from google import genai
 
 GEMINI_API_KEY = "AIzaSyA0RYI9KRrNLi6KaX4g49UJD4G5YBEb6II"
@@ -436,7 +426,7 @@ def title_generator_gemini(topic, api_key_gemini):
     try:
         prompt = f"""
         Generate one shorts video title for a YouTube Shorts video. The title should be written in Hinglish (a mix of Hindi and English). It should be concise, engaging, and ready for direct use in a text-to-video application.
-        Do not say any other thing except the title itself as I will directly use the response given by (through code) without manually extracting the title. Also, generate only one title and not more. You can use emojis if needed. Also, include relevant video tags in the title like #facts #space , etc. Please follow the example below:
+        Do not say any other thing except the title itself as I will directly use the response given by (through code) without manually extracting the title. Also, generate only one title and not more. You can use emojis if needed. Also, include relevant video tags in the title like #facts #space , etc. Make sure that it is very shorts (not more than 50 words long) Please follow the example below:
         Few relevant video topics are: {topic}.
         Correct format (desired output) - Example of correct output:
         "Mars pe dragons mile 🥶🤯! #mars #fact #space"
@@ -449,7 +439,7 @@ def title_generator_gemini(topic, api_key_gemini):
         return [f"Failed to generate title using gemini. Error \n: {e}", is_script_generated]
 
 
-def main():
+def main_title_generator():
     # Instructions for getting client_secrets.json
     print("\nYouTube Shorts Topic Generator")
     print("=" * 30)
@@ -513,5 +503,8 @@ def main():
     print("=" * 50)
     print("=" * 50)
 
+    return title
+
+
 if __name__ == "__main__":
-    main()
+    main_title_generator()
