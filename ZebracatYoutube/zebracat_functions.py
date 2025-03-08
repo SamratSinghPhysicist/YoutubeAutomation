@@ -53,18 +53,33 @@ def create_driver(download_dir=None):
             driver.set_page_load_timeout(60)
             return driver
         except:
-            # Fallback for specific path
-            driver_path = "C:\\Users\\Samrat Singh\\.wdm\\drivers\\chromedriver\\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
-            print(f"Using ChromeDriver at: {driver_path}")
-            service = Service(executable_path=driver_path)
-            print("Service created")
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-            print("Driver created")
-            driver.execute_cdp_cmd('Network.setUserAgentOverride', {
-                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
-            })
-            driver.set_page_load_timeout(60)
-            return driver
+            try:
+                # Fallback for specific path (Asus Vivobook laptop)
+                driver_path = "C:\\Users\\sachi\\.wdm\\drivers\\chromedriver\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
+                print(f"Using ChromeDriver at: {driver_path}")
+                service = Service(executable_path=driver_path)
+                print("Service created")
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                print("Driver created")
+                driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+                    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+                })
+                driver.set_page_load_timeout(60)
+                return driver
+            except:
+                # Fallback for specific path (My pc)
+                driver_path = "C:\\Users\\Samrat Singh\\.wdm\\drivers\\chromedriver\\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
+                print(f"Using ChromeDriver at: {driver_path}")
+                service = Service(executable_path=driver_path)
+                print("Service created")
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                print("Driver created")
+                driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+                    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+                })
+                driver.set_page_load_timeout(60)
+                return driver
+
     except Exception as e:
         print(f"Driver creation error: {str(e)}")
         raise Exception(f"Failed to create driver: {str(e)}")
@@ -275,6 +290,9 @@ def rename_downloaded_file(download_dir, new_name="downloaded_video.mp4"):
     return new_path
 
 def create_video_zebracat(email, video_title):
+    def sanitize_text(text):
+        # Remove or replace problematic characters
+        return ''.join(char for char in text if ord(char) < 65536)
     driver = None
     script_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of this script
     try:
@@ -320,56 +338,72 @@ def create_video_zebracat(email, video_title):
 
         print("Adding video settings ...")
 
-        # Select "Hyperrealism"
-        hyperrealism_div = WebDriverWait(driver, 20).until(
-            EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'sc-iA-DsXs') and contains(., 'Hyperrealism')]"))
+        # Select Hyperrealism style
+        time.sleep(2)
+        print("Clicking hyperrealism option")
+        hyperrealism_option = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[contains(@class, 'sc-iapWAC') and text()='Hyperrealism']"))
         )
-        hyperrealism_div.click()
+        hyperrealism_option.click()
 
         # Wait 2 Seconds and Click "Next Step"
         time.sleep(2)
+        print("Clicking Next Step")
         next_step_button = driver.find_element(By.ID, ":r0:")
         next_step_button.click()
 
         # Select "Fun Facts" from Dropdown
         time.sleep(1)
+        print("Opening Story Style Dropdown")
         story_style_combobox = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'Select your story style')]"))
         )
-        time.sleep(1)
+        time.sleep(2)
         story_style_combobox.click()
+
+        print("Clicking Fun Facts Option")
         fun_facts_option = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//li[@data-value='funfacts']"))
         )
         fun_facts_option.click()
 
         # Enter Text into Textarea
-        time.sleep(1)
-        textarea = driver.find_element(By.XPATH, "//textarea[@placeholder='Example: motivational video encouraging a more healthy and active lifestyle.']")
+        time.sleep(2)
+        print("Describing the video title in textarea")
+        textarea = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Example: motivational video encouraging a more healthy and active lifestyle.']"))
+        )
         textarea.clear()
-        textarea.send_keys(f"Create a youtube shorts on the topic: {video_title}. Make sure that first 5 seconds are very very engaging.")
-
-        # Click the Checkbox
-        time.sleep(1)
-        checkbox = driver.find_element(By.XPATH, "//input[@type='checkbox']")
-        checkbox.click()
+        sanitized_prompt = sanitize_text(f"Create a youtube shorts on the topic: {video_title}. Make sure that first 5 seconds are very very engaging.")
+        driver.execute_script("arguments[0].value = arguments[1]", textarea, sanitized_prompt)
+        textarea.send_keys(" ")
 
         # Select 9:16 Aspect Ratio
         time.sleep(1)
-        aspect_ratio_div = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-dOvA-dm') and contains(., '9:16')]")
-        aspect_ratio_div.click()
+        print("Selecting Aspect Ratio -> 9:16")
+        aspect_ratio = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'title')]//p[contains(text(), '9:16')]"))
+        )
+        aspect_ratio.click()
 
-        # Click on the Slider Mark
+        # Click on the slider mark
         time.sleep(1)
-        slider_mark = driver.find_element(By.XPATH, "//span[contains(@class, 'MuiSlider-mark') and contains(@style, 'left: 6.89655%')]")
+        print("Selecting Video Length -> 30 Seconds")
+        slider_mark = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//span[@data-index='1' and contains(@class, 'MuiSlider-mark')]"))
+        )
         slider_mark.click()
 
-        # Click "Change" Button
+        # Click Change button
         time.sleep(1)
-        change_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Change')]")
+        print("Clicking Change Button for changing voice")
+        change_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Change')]"))
+        )
         change_button.click()
 
         # Select "Hindi" Language
+        print("Selecting Hindi")
         time.sleep(60)
         language_combobox = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'English')]")
         language_combobox.click()
@@ -379,6 +413,7 @@ def create_video_zebracat(email, video_title):
         hindi_option.click()
 
         # Select "Male" Voice Gender
+        print("Selecting Male voice")
         time.sleep(5)
         voice_gender_combobox = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'All')]")
         voice_gender_combobox.click()
@@ -387,29 +422,36 @@ def create_video_zebracat(email, video_title):
         )
         male_option.click()
 
-        # Select "Raju - Relatable Hindi Voice"
+        # Select "Michael"
+        print("Selecting Michael's Voice")
         time.sleep(7)
-        voice_div = driver.find_element(By.XPATH, "//div[contains(@class, 'py6 main') and contains(., 'Raju - Relatable Hindi Voice')]")
-        voice_div.click()
+        voice_option = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'py6 main') and contains(text(), 'Michael')]"))
+        )
+        voice_option.click()
 
         # Click "Select" Button
         time.sleep(5)
+        print("Clicking Select button (for confirming voice changes)")
         select_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Select')]")
         select_button.click()
 
         # Change Video Mood to Energetic
+        print("Opening dropdown to change video mood to energetic")
         time.sleep(10)
         combobox = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//div[@role='combobox' and contains(text(), 'Happy')]"))
         )
         combobox.click()
         time.sleep(2)
+        print("Changing video mood to energetic")
         energetic_option = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//li[@data-value='Energetic']"))
         )
         energetic_option.click()
 
         # Click "Next Step" After 3 Second
+        print("Clicking Next Step button")
         time.sleep(3)
         next_step_button_2 = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Next Step')]"))
@@ -418,6 +460,7 @@ def create_video_zebracat(email, video_title):
 
         # Wait 20 Seconds and Click "Generate Video"
         time.sleep(20)
+        print("Clicking Generate Video Button after confirming script")
         generate_video_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Generate Video')]"))
         )
@@ -426,19 +469,26 @@ def create_video_zebracat(email, video_title):
         # Check for Checkbox and Handle
         time.sleep(30)
         try:
-            checkbox_2 = driver.find_element(By.XPATH, "//input[@type='checkbox' and @class='sc-dChVcU cwixky PrivateSwitchBase-input']")
-            checkbox_2.click()
-            generate_video_button.click()
+            time.sleep(1)
+            print("Clicking the checkbox")
+            checkbox = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//input[@class='sc-fyVfxW bZrHmF PrivateSwitchBase-input']"))
+            )
+            driver.execute_script("arguments[0].click();", checkbox)
         except:
+            print("Couldn't find script's language verification checkbox")
+            print("Continuing ...")
             pass  # Checkbox not found, proceed without action
 
         # Wait 5 minutes and Click "Export"
         print("Video Generation started ...")
         time.sleep(300)
         print("Video generation done. \n Trying to export and process the video for download ...")
+        print("Clicking on export button")
         export_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Export')]")
         export_button.click()
         # Click "Prepare Video"
+        print("Clicking on Prepare video button")
         prepare_video_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Prepare Video')]")
         prepare_video_button.click()
 
@@ -453,6 +503,7 @@ def create_video_zebracat(email, video_title):
         print("Downloading the video ...")
         more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-fPgHrj')]")
         more_icon.click()
+        print("Clicking on download option")
         download_option = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//li[contains(., 'Download')]"))
         )

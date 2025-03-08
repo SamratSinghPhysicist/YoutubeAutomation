@@ -4,6 +4,7 @@ from zebracat_functions import account_maker_zebracat, login_zebracat, create_vi
 import time
 import os
 import pickle
+from title_generator import main_title_generator
 
 def upload_to_youtube(video_file, title, description="Don't forget to like and subscribe", tags=None, privacyStatus="public"):
     """
@@ -74,7 +75,9 @@ def upload_to_youtube(video_file, title, description="Don't forget to like and s
 
 
 
-def main(video_title):
+def main():
+
+    video_title = main_title_generator()
 
     accounts_data = {}
 
@@ -98,7 +101,7 @@ def main(video_title):
             print(f"Error in account creation for {email} on zebracat.ai: {e}")
         
         try:
-            create_video_zebracat(email, video_title=video_title)
+            create_video_zebracat(email, video_title)
         except Exception as e:
             print(f"Error in creating video for {email} on zebracat.ai: {e}")
 
@@ -124,5 +127,4 @@ def main(video_title):
         print("Video upload failed. Local video file (downloaded_video.mp4) retained.")
 
 if __name__ == "__main__":
-    video_title = "Space mei diamond rain!"
-    main(video_title)
+    main()
