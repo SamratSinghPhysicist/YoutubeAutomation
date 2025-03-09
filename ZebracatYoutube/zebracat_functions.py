@@ -55,7 +55,7 @@ def create_driver(download_dir=None):
         except:
             try:
                 # Fallback for specific path (Asus Vivobook laptop)
-                driver_path = "C:\\Users\\sachi\\.wdm\\drivers\\chromedriver\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
+                driver_path = "C:\\Users\\sachi\\.wdm\\drivers\\chromedriver\\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
                 print(f"Using ChromeDriver at: {driver_path}")
                 service = Service(executable_path=driver_path)
                 print("Service created")
@@ -114,12 +114,12 @@ def register_zebracat(email):
         
         driver.get("https://studio.zebracat.ai/login/")
 
-        email_input = WebDriverWait(driver, 20).until(
+        email_input = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.NAME, "email"))
         )
         email_input.send_keys(email)
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
@@ -170,16 +170,16 @@ def initial_setup_zebracat(email):
         
         driver.get("https://studio.zebracat.ai/login/")
         
-        email_input = WebDriverWait(driver, 20).until(
+        email_input = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.NAME, "email"))
         )
         email_input.send_keys(email)
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
-        password_input = WebDriverWait(driver, 20).until(
+        password_input = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.NAME, "password"))
         )
         password_input.send_keys("Study@123")
@@ -190,19 +190,19 @@ def initial_setup_zebracat(email):
         time.sleep(10)
         driver.get("https://studio.zebracat.ai/")
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'option') and contains(text(), 'Content Creator')]"))
         ).click()
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'option') and contains(text(), 'YouTube Shorts')]"))
         ).click()
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit')]"))
         ).click()
 
@@ -238,16 +238,16 @@ def login_zebracat(email):
         
         driver.get("https://studio.zebracat.ai/login/")
 
-        email_input = WebDriverWait(driver, 10).until(
+        email_input = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.NAME, "email"))
         )
         email_input.send_keys(email)
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
-        password_input = WebDriverWait(driver, 10).until(
+        password_input = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.NAME, "password"))
         )
         password_input.send_keys("Study@123")
@@ -304,16 +304,16 @@ def create_video_zebracat(email, video_title):
         
         driver.get("https://studio.zebracat.ai/login/")
 
-        email_input = WebDriverWait(driver, 20).until(
+        email_input = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.NAME, "email"))
         )
         email_input.send_keys(email)
 
-        WebDriverWait(driver, 20).until(
+        WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
-        password_input = WebDriverWait(driver, 20).until(
+        password_input = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.NAME, "password"))
         )
         password_input.send_keys("Study@123")
@@ -331,7 +331,7 @@ def create_video_zebracat(email, video_title):
         driver.get("https://studio.zebracat.ai/")
 
         # Click on "Create Video" Button
-        create_video_button = WebDriverWait(driver, 20).until(
+        create_video_button = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Create Video')]"))
         )
         create_video_button.click()
@@ -341,7 +341,7 @@ def create_video_zebracat(email, video_title):
         # Select Hyperrealism style
         time.sleep(2)
         print("Clicking hyperrealism option")
-        hyperrealism_option = WebDriverWait(driver, 10).until(
+        hyperrealism_option = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//p[contains(@class, 'sc-iapWAC') and text()='Hyperrealism']"))
         )
         hyperrealism_option.click()
@@ -355,14 +355,14 @@ def create_video_zebracat(email, video_title):
         # Select "Fun Facts" from Dropdown
         time.sleep(1)
         print("Opening Story Style Dropdown")
-        story_style_combobox = WebDriverWait(driver, 10).until(
+        story_style_combobox = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'Select your story style')]"))
         )
         time.sleep(2)
         story_style_combobox.click()
 
         print("Clicking Fun Facts Option")
-        fun_facts_option = WebDriverWait(driver, 10).until(
+        fun_facts_option = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//li[@data-value='funfacts']"))
         )
         fun_facts_option.click()
@@ -370,7 +370,7 @@ def create_video_zebracat(email, video_title):
         # Enter Text into Textarea
         time.sleep(2)
         print("Describing the video title in textarea")
-        textarea = WebDriverWait(driver, 10).until(
+        textarea = WebDriverWait(driver, 120).until(
             EC.presence_of_element_located((By.XPATH, "//textarea[@placeholder='Example: motivational video encouraging a more healthy and active lifestyle.']"))
         )
         textarea.clear()
@@ -381,7 +381,7 @@ def create_video_zebracat(email, video_title):
         # Select 9:16 Aspect Ratio
         time.sleep(1)
         print("Selecting Aspect Ratio -> 9:16")
-        aspect_ratio = WebDriverWait(driver, 10).until(
+        aspect_ratio = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'title')]//p[contains(text(), '9:16')]"))
         )
         aspect_ratio.click()
@@ -389,7 +389,7 @@ def create_video_zebracat(email, video_title):
         # Click on the slider mark
         time.sleep(1)
         print("Selecting Video Length -> 30 Seconds")
-        slider_mark = WebDriverWait(driver, 10).until(
+        slider_mark = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//span[@data-index='1' and contains(@class, 'MuiSlider-mark')]"))
         )
         slider_mark.click()
@@ -397,7 +397,7 @@ def create_video_zebracat(email, video_title):
         # Click Change button
         time.sleep(1)
         print("Clicking Change Button for changing voice")
-        change_button = WebDriverWait(driver, 10).until(
+        change_button = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Change')]"))
         )
         change_button.click()
@@ -407,7 +407,7 @@ def create_video_zebracat(email, video_title):
         time.sleep(60)
         language_combobox = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'English')]")
         language_combobox.click()
-        hindi_option = WebDriverWait(driver, 10).until(
+        hindi_option = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//li[@data-value='hindi']"))
         )
         hindi_option.click()
@@ -425,7 +425,7 @@ def create_video_zebracat(email, video_title):
         # Select "Michael"
         print("Selecting Michael's Voice")
         time.sleep(7)
-        voice_option = WebDriverWait(driver, 10).until(
+        voice_option = WebDriverWait(driver, 120).until(
         EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'py6 main') and contains(text(), 'Michael')]"))
         )
         voice_option.click()
@@ -439,13 +439,13 @@ def create_video_zebracat(email, video_title):
         # Change Video Mood to Energetic
         print("Opening dropdown to change video mood to energetic")
         time.sleep(10)
-        combobox = WebDriverWait(driver, 10).until(
+        combobox = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//div[@role='combobox' and contains(text(), 'Happy')]"))
         )
         combobox.click()
         time.sleep(2)
         print("Changing video mood to energetic")
-        energetic_option = WebDriverWait(driver, 10).until(
+        energetic_option = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//li[@data-value='Energetic']"))
         )
         energetic_option.click()
@@ -453,7 +453,7 @@ def create_video_zebracat(email, video_title):
         # Click "Next Step" After 3 Second
         print("Clicking Next Step button")
         time.sleep(3)
-        next_step_button_2 = WebDriverWait(driver, 10).until(
+        next_step_button_2 = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Next Step')]"))
         )
         next_step_button_2.click()
@@ -461,7 +461,7 @@ def create_video_zebracat(email, video_title):
         # Wait 20 Seconds and Click "Generate Video"
         time.sleep(20)
         print("Clicking Generate Video Button after confirming script")
-        generate_video_button = WebDriverWait(driver, 10).until(
+        generate_video_button = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Generate Video')]"))
         )
         generate_video_button.click()
@@ -471,10 +471,11 @@ def create_video_zebracat(email, video_title):
         try:
             time.sleep(1)
             print("Clicking the checkbox")
-            checkbox = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//input[@class='sc-fyVfxW bZrHmF PrivateSwitchBase-input']"))
-            )
-            driver.execute_script("arguments[0].click();", checkbox)
+            checkbox_2 = driver.find_element(By.XPATH, "//input[@class='sc-fyVfxW bZrHmF PrivateSwitchBase-input']")
+            checkbox_2.click()            
+
+            generate_video_button.click()
+            
         except:
             print("Couldn't find script's language verification checkbox")
             print("Continuing ...")
@@ -504,7 +505,7 @@ def create_video_zebracat(email, video_title):
         more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-fPgHrj')]")
         more_icon.click()
         print("Clicking on download option")
-        download_option = WebDriverWait(driver, 10).until(
+        download_option = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//li[contains(., 'Download')]"))
         )
         download_option.click()
