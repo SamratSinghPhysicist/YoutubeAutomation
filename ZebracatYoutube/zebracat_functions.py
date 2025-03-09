@@ -16,7 +16,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 def create_driver(download_dir=None):
     """Initialize Selenium WebDriver with Chrome options."""
     chrome_options = Options()
-    #chrome_options.add_argument('--headless')   # Headless mode
+    chrome_options.add_argument('--headless')   # Headless mode
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--ignore-certificate-errors')
@@ -190,18 +190,26 @@ def initial_setup_zebracat(email):
         time.sleep(10)
         driver.get("https://studio.zebracat.ai/")
 
+        time.sleep(10)
+        print("Clicking on option 'Content Creator'")
         WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'option') and contains(text(), 'Content Creator')]"))
         ).click()
 
+        time.sleep(10)
+        print("Clicking on 'Continue' Button")
         WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Continue')]"))
         ).click()
 
+        time.sleep(10)
+        print("Clicking on option 'Youtube Shorts'")
         WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'option') and contains(text(), 'YouTube Shorts')]"))
         ).click()
 
+        time.sleep(10)
+        print("Clicking on 'Submit' Button")
         WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'Submit')]"))
         ).click()
