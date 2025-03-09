@@ -156,7 +156,7 @@ def upload_to_youtube(video_file, title, description="Don't forget to like and s
 def main():
 
     video_title = main_title_generator()
-    """
+    
     accounts_data = {}
 
     #Seting up zebracat.ai and downloading the video.
@@ -188,7 +188,7 @@ def main():
     finally:
         print("\nProcess completed")
         print(f"Successfully processed {len(accounts_data)} accounts")
-    """
+        
     #Uploading the video to youtube.
     print("Uploading video to YouTube...")
     response = upload_to_youtube(video_file = "downloaded_video.mp4", title= video_title)

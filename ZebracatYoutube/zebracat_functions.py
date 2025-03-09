@@ -502,7 +502,7 @@ def create_video_zebracat(email, video_title):
         # Click "More" and Select "Download"
 
         print("Downloading the video ...")
-        more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-fPgHrj')]")
+        more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-jsFtja')]")
         more_icon.click()
         print("Clicking on download option")
         download_option = WebDriverWait(driver, 120).until(
