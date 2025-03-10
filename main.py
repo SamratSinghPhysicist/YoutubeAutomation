@@ -16,6 +16,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload
 
+
 def upload_to_youtube(video_file, title, description="Don't forget to like and subscribe", tags=None):
     """
     Uploads the given video file to YouTube and schedules it for the next day at 2:00 PM IST
@@ -150,8 +151,6 @@ def upload_to_youtube(video_file, title, description="Don't forget to like and s
         print(f"Video upload failed. Local video file ({video_file}) retained.")
         return None
 
-# Example usage (uncomment to test):
-# upload_to_youtube("downloaded_video.mp4", "Test Video", "This is a test upload.")
 
 def main():
     # Check if running in GitHub Actions environment
