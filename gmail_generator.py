@@ -25,6 +25,7 @@ def generate_gmail():
         try:
             if response.json()["error"]:
                 print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
+                print(response.json())
                 print(f"Trying to use {i+2}th Rapid API key")
                 continue
             else:
@@ -59,6 +60,7 @@ def get_inbox(email):
         try:
             if response.json()["error"]:
                 print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
+                print(response.json())
                 print(f"Trying to use {i+2}th Rapid API key")
                 continue
             else:
@@ -90,6 +92,7 @@ def get_message(message_id):
         try:
             if response.json()["error"]:
                 print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
+                print(response.json())
                 print(f"Trying to use {i+2}th Rapid API key")
                 continue
             else:

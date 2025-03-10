@@ -30,7 +30,7 @@ on:
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
-  generate-and-upload:
+  generate-and-upload-zebracat:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
