@@ -31,28 +31,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Setup YouTube credentials
-        run: |
-          echo "$YOUTUBE_CLIENT_SECRETS" > client_secrets.json
-        env:
-          YOUTUBE_CLIENT_SECRETS: ${{ secrets.YOUTUBE_CLIENT_SECRETS }}
-
-      - name: Setup YouTube token
-        run: |
-          echo "$YOUTUBE_TOKEN" > token.pickle
-        env:
-          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
-
-      - name: Setup Gemini API key
-        run: |
-          echo "export GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
-
-      - name: Setup Gmail API key
-        run: |
-          echo "export GMAIL_API_KEY=${{ secrets.GMAIL_API_KEY }}" >> $GITHUB_ENV
-
       - name: Run YouTube automation
-        run: python main.py
+        run: python ZebracatYoutube/main.py
 
       - name: Archive video file if upload failed
         if: failure()

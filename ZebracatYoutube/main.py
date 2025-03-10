@@ -158,12 +158,6 @@ def main():
     is_github_actions = os.environ.get('GITHUB_ACTIONS') == 'true'
     if is_github_actions:
         print("Running in GitHub Actions environment")
-        # Use environment variables for API keys in GitHub Actions
-        gemini_api_key = os.environ.get('GEMINI_API_KEY')
-        if gemini_api_key:
-            # Set the API key for title generation
-            import title_generator
-            title_generator.GEMINI_API_KEY = gemini_api_key
 
     video_title = main_title_generator()
     print(f"Generated video title: {video_title}")
@@ -200,10 +194,6 @@ def main():
         print("\nProcess completed")
         print(f"Successfully processed {len(accounts_data)} accounts")
     
-    # Check if video file exists before attempting upload
-    if not os.path.exists("downloaded_video.mp4"):
-        print("Error: Video file 'downloaded_video.mp4' not found. Cannot proceed with upload.")
-        return
         
     # Uploading the video to YouTube
     print("Uploading video to YouTube...")
