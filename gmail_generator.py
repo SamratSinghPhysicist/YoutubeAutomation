@@ -85,7 +85,7 @@ def get_message(message_id):
     
     for i, rapid_api_key in enumerate(RAPID_API_KEYS):
         print(f"{i+1}th Rapid API key out of {len(RAPID_API_KEYS)} Keys is being used")
-        response = requests.post(url, json=payload, headers=header_api_setter(RAPID_API_KEYS[i]))
+        response = requests.post(url, headers=header_api_setter(RAPID_API_KEYS[i]), params=querystring)
 
         try:
             if response.json()["error"]:
