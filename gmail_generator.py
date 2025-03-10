@@ -22,16 +22,19 @@ def generate_gmail():
         print(f"{i+1}th Rapid API key out of {len(RAPID_API_KEYS)} Keys is being used")
         response = requests.post(url, json=payload, headers=header_api_setter(RAPID_API_KEYS[i]))
 
-        if response.json()["error"]:
-            print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
-            print(f"Trying to use {i+2}th Rapid API key")
-            continue
-        else:
-            break
-
-    print(response.json())
-
-    return response.json()["email"]        
+        try:
+            if response.json()["error"]:
+                print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
+                print(f"Trying to use {i+2}th Rapid API key")
+                continue
+            else:
+                print(response.json())
+                return response.json()["email"]
+                break
+        except:
+            print(response.json())
+            return response.json()["email"]
+    print(response.json())       
         
 def get_inbox(email):
     url = "https://gmailnator.p.rapidapi.com/inbox"
@@ -53,26 +56,25 @@ def get_inbox(email):
         print(f"{i+1}th Rapid API key out of {len(RAPID_API_KEYS)} Keys is being used")
         response = requests.post(url, json=payload, headers=header_api_setter(RAPID_API_KEYS[i]))
 
-        if response.json()["error"]:
-            print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
-            print(f"Trying to use {i+2}th Rapid API key")
-            continue
-        else:
-            break
-
-
+        try:
+            if response.json()["error"]:
+                print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
+                print(f"Trying to use {i+2}th Rapid API key")
+                continue
+            else:
+                print(response.json())
+                return response.json()
+                break
+        except:
+            print(response.json())
+            return response.json()
     print(response.json())
-    return response.json()
-
+    
 def get_message(message_id):
     url = "https://gmailnator.p.rapidapi.com/messageid"
 
     querystring = {"id":f"{message_id}"}
 
-    headers = {
-    	"x-rapidapi-key": "bc7cb2c378mshf1f88c9c7e37d36p1c4039jsn6697d765a2bb",
-    	"x-rapidapi-host": "gmailnator.p.rapidapi.com"
-    }
     def header_api_setter(rapid_api_key):
         headers = {
         	"x-rapidapi-key": f"{rapid_api_key}",
@@ -85,12 +87,20 @@ def get_message(message_id):
         print(f"{i+1}th Rapid API key out of {len(RAPID_API_KEYS)} Keys is being used")
         response = requests.post(url, json=payload, headers=header_api_setter(RAPID_API_KEYS[i]))
 
-        if response.json()["error"]:
-            print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
-            print(f"Trying to use {i+2}th Rapid API key")
-            continue
-        else:
-            break
+        try:
+            if response.json()["error"]:
+                print(f"{i+1}th Rapid API key QUOTA LIMIT REACHED")
+                print(f"Trying to use {i+2}th Rapid API key")
+                continue
+            else:
+                print(response.json())
+                return response.json()
+                break
+        except:
+            print(response.json())
+            return response.json()
+    print(response.json())
+
 
     print(response.json())
     return response.json()
