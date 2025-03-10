@@ -14,7 +14,9 @@ from gmail_generator import get_inbox, get_message
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def create_driver(download_dir=None):
-    """Initialize Selenium WebDriver with Chrome options."""
+    """Initialize Selenium WebDriver with Chrome options.
+    Optimized for both local and CI/CD environments (GitHub Actions).
+    """
     chrome_options = Options()
     chrome_options.add_argument('--headless')   # Headless mode
     chrome_options.add_argument('--no-sandbox')
@@ -39,46 +41,58 @@ def create_driver(download_dir=None):
         })
 
     try:
-        try:
-            print("Installing ChromeDriver...")
-            driver_path = ChromeDriverManager().install()
-            print(f"ChromeDriver installed at: {driver_path}")
-            service = Service(driver_path)
-            print("Service created")
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-            print("Driver created")
-            driver.execute_cdp_cmd('Network.setUserAgentOverride', {
-                "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
-            })
-            driver.set_page_load_timeout(60)
-            return driver
-        except:
+        # Check if running in GitHub Actions
+        is_github_actions = os.environ.get('GITHUB_ACTIONS') == 'true'
+        
+        if is_github_actions:
+            # GitHub Actions specific setup
+            print("Running in GitHub Actions environment")
+            
+            # Set up virtual display for headless browser in Linux environment
             try:
-                # Fallback for specific path (Asus Vivobook laptop)
-                driver_path = "C:\\Users\\sachi\\.wdm\\drivers\\chromedriver\\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
-                print(f"Using ChromeDriver at: {driver_path}")
-                service = Service(executable_path=driver_path)
+                from pyvirtualdisplay import Display
+                display = Display(visible=0, size=(1920, 1080))
+                display.start()
+                print("Virtual display started for GitHub Actions")
+            except Exception as display_error:
+                print(f"Note: Virtual display setup failed, continuing anyway: {display_error}")
+            
+            # In GitHub Actions, Chrome is installed via workflow
+            try:
+                import chromedriver_autoinstaller
+                chromedriver_autoinstaller.install()
+                print("ChromeDriver auto-installed for GitHub Actions")
+            except Exception as auto_install_error:
+                print(f"ChromeDriver auto-install failed: {auto_install_error}")
+            
+            driver = webdriver.Chrome(options=chrome_options)
+            print("Driver created for GitHub Actions")
+        else:
+            # Local environment setup with ChromeDriverManager
+            try:
+                print("Installing ChromeDriver...")
+                driver_path = ChromeDriverManager().install()
+                print(f"ChromeDriver installed at: {driver_path}")
+                service = Service(driver_path)
                 print("Service created")
                 driver = webdriver.Chrome(service=service, options=chrome_options)
                 print("Driver created")
-                driver.execute_cdp_cmd('Network.setUserAgentOverride', {
-                    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
-                })
-                driver.set_page_load_timeout(60)
-                return driver
-            except:
-                # Fallback for specific path (My pc)
-                driver_path = "C:\\Users\\Samrat Singh\\.wdm\\drivers\\chromedriver\\win64\\134.0.6998.35\\chromedriver-win32\\chromedriver.exe"
-                print(f"Using ChromeDriver at: {driver_path}")
-                service = Service(executable_path=driver_path)
-                print("Service created")
-                driver = webdriver.Chrome(service=service, options=chrome_options)
-                print("Driver created")
-                driver.execute_cdp_cmd('Network.setUserAgentOverride', {
-                    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
-                })
-                driver.set_page_load_timeout(60)
-                return driver
+            except Exception as local_error:
+                print(f"Error with ChromeDriverManager: {local_error}")
+                # Fallback to system Chrome if available
+                try:
+                    driver = webdriver.Chrome(options=chrome_options)
+                    print("Driver created using system Chrome")
+                except Exception as system_error:
+                    print(f"Error with system Chrome: {system_error}")
+                    raise Exception("Failed to create driver with both ChromeDriverManager and system Chrome")
+        
+        # Common setup for both environments
+        driver.execute_cdp_cmd('Network.setUserAgentOverride', {
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+        })
+        driver.set_page_load_timeout(60)
+        return driver
 
     except Exception as e:
         print(f"Driver creation error: {str(e)}")

@@ -154,12 +154,23 @@ def upload_to_youtube(video_file, title, description="Don't forget to like and s
 # upload_to_youtube("downloaded_video.mp4", "Test Video", "This is a test upload.")
 
 def main():
+    # Check if running in GitHub Actions environment
+    is_github_actions = os.environ.get('GITHUB_ACTIONS') == 'true'
+    if is_github_actions:
+        print("Running in GitHub Actions environment")
+        # Use environment variables for API keys in GitHub Actions
+        gemini_api_key = os.environ.get('GEMINI_API_KEY')
+        if gemini_api_key:
+            # Set the API key for title generation
+            import title_generator
+            title_generator.GEMINI_API_KEY = gemini_api_key
 
     video_title = main_title_generator()
+    print(f"Generated video title: {video_title}")
     
     accounts_data = {}
 
-    #Seting up zebracat.ai and downloading the video.
+    # Setting up zebracat.ai and downloading the video.
     try:  
         email = generate_gmail()
         print(f"\nProcessing account: {email}")
@@ -188,8 +199,13 @@ def main():
     finally:
         print("\nProcess completed")
         print(f"Successfully processed {len(accounts_data)} accounts")
+    
+    # Check if video file exists before attempting upload
+    if not os.path.exists("downloaded_video.mp4"):
+        print("Error: Video file 'downloaded_video.mp4' not found. Cannot proceed with upload.")
+        return
         
-    #Uploading the video to youtube.
+    # Uploading the video to YouTube
     print("Uploading video to YouTube...")
     response = upload_to_youtube(video_file = "downloaded_video.mp4", title= video_title)
     if response:
@@ -203,6 +219,11 @@ def main():
             print("Failed to delete local video file (downloaded_video.mp4):", e)
     else:
         print("Video upload failed. Local video file (downloaded_video.mp4) retained.")
+        # In GitHub Actions, we want to make sure the workflow fails if upload fails
+        if is_github_actions:
+            print("GitHub Actions detected - marking workflow as failed due to upload failure")
+            import sys
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()

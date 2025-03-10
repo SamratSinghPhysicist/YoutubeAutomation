@@ -1,0 +1,63 @@
+name: YouTube Automation Workflow
+
+on:
+  schedule:
+    # Run daily at 10:00 UTC (adjust as needed)
+    - cron: '0 10 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  generate-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Chrome
+        run: |
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Setup YouTube credentials
+        run: |
+          echo "$YOUTUBE_CLIENT_SECRETS" > client_secrets.json
+        env:
+          YOUTUBE_CLIENT_SECRETS: ${{ secrets.YOUTUBE_CLIENT_SECRETS }}
+
+      - name: Setup YouTube token
+        run: |
+          echo "$YOUTUBE_TOKEN" > token.pickle
+        env:
+          YOUTUBE_TOKEN: ${{ secrets.YOUTUBE_TOKEN }}
+
+      - name: Setup Gemini API key
+        run: |
+          echo "export GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
+
+      - name: Setup Gmail API key
+        run: |
+          echo "export GMAIL_API_KEY=${{ secrets.GMAIL_API_KEY }}" >> $GITHUB_ENV
+
+      - name: Run YouTube automation
+        run: python main.py
+
+      - name: Archive video file if upload failed
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: video-file
+          path: downloaded_video.mp4
+          retention-days: 1

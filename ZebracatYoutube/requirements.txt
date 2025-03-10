@@ -1,17 +1,35 @@
+# Core dependencies
 beautifulsoup4==4.13.3
 Requests==2.32.3
 selenium==4.29.0
 webdriver-manager==4.0.1
 urllib3==2.1.0
+
+# Google API dependencies
 google-api-python-client==2.86.0
 google-auth-oauthlib==1.0.0
 google-auth-httplib2==0.1.0
+google-genai==1.5.0
+
+# Data processing dependencies
 pandas==2.0.3
 numpy==1.24.3
+nltk==3.9.1
+pytrends==4.9.2
+
+# Utility dependencies
 colorama==0.4.6
 termcolor==2.3.0
 pretty-tables==3.1.0
-pytrends==4.9.2
 tqdm==4.65.0
-google-genai==1.5.0
-nltk==3.9.1
+pytz==2023.3
+
+# CI/CD specific dependencies
+python-dotenv==1.0.0
+requests-toolbelt==1.0.0
+pickle5==0.0.11
+
+# GitHub Actions specific dependencies
+chromedriver-autoinstaller==0.6.2
+pyvirtualdisplay==3.0
+xvfbwrapper==0.2.9
