@@ -18,7 +18,7 @@ def create_driver(download_dir=None):
     Optimized for both local and CI/CD environments (GitHub Actions).
     """
     chrome_options = Options()
-    chrome_options.add_argument('--headless')   # Headless mode
+    # chrome_options.add_argument('--headless')   # Headless mode
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument('--ignore-certificate-errors')
@@ -425,15 +425,18 @@ def create_video_zebracat(email, video_title):
         change_button.click()
 
         # Select "Hindi" Language
-        print("Selecting Hindi")
+        print("Opening Lanuguage Dropdown")
         time.sleep(60)
         language_combobox = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'English')]")
         language_combobox.click()
+
+        time.sleep(10)
+        print("Selecting Hindi from dropdown")
         hindi_option = WebDriverWait(driver, 120).until(
             EC.element_to_be_clickable((By.XPATH, "//li[@data-value='hindi']"))
         )
         hindi_option.click()
-        
+
         # Select "Male" Voice Gender
         print("Selecting Male voice")
         time.sleep(5)
