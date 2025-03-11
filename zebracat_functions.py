@@ -447,11 +447,11 @@ def create_video_zebracat(email, video_title):
         )
         male_option.click()
 
-        # Select "Michael"
-        print("Selecting Michael's Voice")
+        # Select "Raju"
+        print("Selecting Raju's Voice")
         time.sleep(7)
         voice_option = WebDriverWait(driver, 120).until(
-        EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'py6 main') and contains(text(), 'Michael')]"))
+        EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'py6 main') and contains(text(), 'Raju - Relatable Hindi Voice')]"))
         )
         voice_option.click()
 
