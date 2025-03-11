@@ -28,7 +28,7 @@ def generate_gmail():
 
     payload = { "options": [3] }
     headers = {
-    	"x-rapidapi-key": "bc7cb2c378mshf1f88c9c7e37d36p1c4039jsn6697d765a2bb",
+    	"x-rapidapi-key": "e5af10b750msh631719d398fe970p1e98e9jsnb0fc2dfa6393",
     	"x-rapidapi-host": "gmailnator.p.rapidapi.com",
     	"Content-Type": "application/json"
     }
@@ -46,7 +46,7 @@ def get_inbox(email):
     	"limit": 20
     }
     headers = {
-    	"x-rapidapi-key": "bc7cb2c378mshf1f88c9c7e37d36p1c4039jsn6697d765a2bb",
+    	"x-rapidapi-key": "e5af10b750msh631719d398fe970p1e98e9jsnb0fc2dfa6393",
     	"x-rapidapi-host": "gmailnator.p.rapidapi.com",
     	"Content-Type": "application/json"
     }
@@ -62,7 +62,7 @@ def get_message(message_id):
     querystring = {"id":f"{message_id}"}
 
     headers = {
-    	"x-rapidapi-key": "bc7cb2c378mshf1f88c9c7e37d36p1c4039jsn6697d765a2bb",
+    	"x-rapidapi-key": "e5af10b750msh631719d398fe970p1e98e9jsnb0fc2dfa6393",
     	"x-rapidapi-host": "gmailnator.p.rapidapi.com"
     }
 
