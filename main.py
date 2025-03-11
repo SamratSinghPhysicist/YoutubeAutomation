@@ -195,12 +195,18 @@ def main():
         print(f"Successfully processed {len(accounts_data)} accounts")
     
         
-    # Uploading the video to YouTube
-    print("Uploading video to YouTube...")
-    response = upload_to_youtube(video_file = "downloaded_video.mp4", title= video_title)
-    if response:
-        print("Video uploaded successfully!")
-        print("Response snippet:", response.get("snippet", {}))
+    # Uploading the video to YouTube using Selenium instead of API
+    print("Uploading video to YouTube using Selenium automation...")
+    from youtube_selenium_upload import upload_to_youtube_selenium
+    
+    success = upload_to_youtube_selenium(
+        video_file="downloaded_video.mp4",
+        title=video_title,
+        description="Like and Subscribe for more amazing content"
+    )
+    
+    if success:
+        print("Video uploaded successfully via Selenium automation!")
         print("Deleting the local video files")
         try:
             os.remove("downloaded_video.mp4")
