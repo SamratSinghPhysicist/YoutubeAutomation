@@ -426,32 +426,13 @@ def create_video_zebracat(email, video_title):
 
         # Select "Hindi" Language
         print("Selecting Hindi")
-        time.sleep(60)  # Reduced wait time before attempting to click
-        
-        # First, find and click the language dropdown using JavaScript
-        language_dropdown = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//div[@role='combobox' and contains(., 'English')]"))
+        time.sleep(60)
+        language_combobox = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-JrDLc') and contains(., 'English')]")
+        language_combobox.click()
+        hindi_option = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.XPATH, "//li[@data-value='hindi']"))
         )
-        # Scroll the element into view and click using JavaScript
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", language_dropdown)
-        driver.execute_script("arguments[0].click();", language_dropdown)
-        
-        # Wait for dropdown options to be visible
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, "//li[@data-value='hindi']"))
-        )
-        
-        # Find and click the Hindi option using JavaScript
-        hindi_option = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.XPATH, "//li[@data-value='hindi']"))
-        )
-        # Scroll the element into view and click using JavaScript
-        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", hindi_option)
-        time.sleep(1)  # Small pause to ensure element is properly in view
-        driver.execute_script("arguments[0].click();", hindi_option)
-        
-        # Wait to confirm selection was made
-        time.sleep(2)
+        hindi_option.click()
         
         # Select "Male" Voice Gender
         print("Selecting Male voice")
