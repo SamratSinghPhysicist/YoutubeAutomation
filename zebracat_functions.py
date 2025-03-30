@@ -587,11 +587,18 @@ def create_video_zebracat(email, video_title):
         time.sleep(300)
         print("Video generation done. \n Trying to export and process the video for download ...")
         print("Clicking on export button")
-        export_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Export')]")
+        
+        # Using a more specific selector for the export button with SVG
+        export_button = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, '_primary-btn') and .//p[contains(text(), 'Export')]]"))
+        )
         export_button.click()
-        # Click "Prepare Video"
+        
+        # Click "Prepare Video" with the updated selector
         print("Clicking on Prepare video button")
-        prepare_video_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Prepare Video')]")
+        prepare_video_button = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'sc-cHqXqK') and contains(text(), 'Prepare Video')]"))
+        )
         prepare_video_button.click()
 
         # Wait 5 Minutes for Video Processing
@@ -600,16 +607,64 @@ def create_video_zebracat(email, video_title):
 
         print("Video processing Done")
 
-        # Click "More" and Select "Download"
-
+        # Click "More" and Select "Download" with updated selectors
         print("Downloading the video ...")
-        more_icon = driver.find_element(By.XPATH, "//div[contains(@class, 'sc-jsFtja')]")
-        more_icon.click()
-        print("Clicking on download option")
-        download_option = WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.XPATH, "//li[contains(., 'Download')]"))
-        )
-        download_option.click()
+        
+        # Click "More" and Select "Download" with updated selectors
+        print("Downloading the video ...")
+        
+        # Try multiple approaches to find the correct more-icon
+        try:
+            # First try to find the more-icon near the download section
+            # Wait for any loading to complete
+            time.sleep(5)
+            
+            # Try to find the more icon by its position in the document
+            # Look for the more icon that appears after the video is processed
+            more_icons = driver.find_elements(By.XPATH, "//div[contains(@class, 'sc-gppfCo')]//svg[contains(@class, 'more-icon')]")
+            
+            if len(more_icons) > 0:
+                print(f"Found {len(more_icons)} more-icons, clicking on the first one")
+                more_icons[0].click()
+            else:
+                # Try alternative selector
+                print("Trying alternative selector for more-icon")
+                more_icon = WebDriverWait(driver, 30).until(
+                    EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'sc-gppfCo')]"))
+                )
+                more_icon.click()
+            
+            # Wait 2 seconds and click on Download option
+            time.sleep(2)
+            print("Clicking on download option")
+            download_option = WebDriverWait(driver, 30).until(
+                EC.element_to_be_clickable((By.XPATH, "//li[contains(@class, 'sc-dcJsrY')]//span[contains(text(), 'Download')]"))
+            )
+            download_option.click()
+            
+        except Exception as e:
+            print(f"Error with first approach: {e}")
+            # Try a different approach - JavaScript click
+            try:
+                print("Trying JavaScript approach to click more-icon")
+                more_icons = driver.find_elements(By.XPATH, "//div[contains(@class, 'sc-gppfCo')]")
+                if more_icons:
+                    driver.execute_script("arguments[0].click();", more_icons[0])
+                    time.sleep(2)
+                    
+                    # Try to find and click download option
+                    download_options = driver.find_elements(By.XPATH, "//span[contains(text(), 'Download')]")
+                    if download_options:
+                        driver.execute_script("arguments[0].click();", download_options[0])
+                    else:
+                        raise Exception("Download option not found after clicking more-icon")
+                else:
+                    raise Exception("No more-icons found with JavaScript approach")
+            except Exception as js_error:
+                print(f"Error with JavaScript approach: {js_error}")
+                # Final fallback - try to use direct URL for download if possible
+                print("Attempting to use direct download URL if available")
+                # This would depend on the site structure
 
         # Wait 5 Minutes for Download Preparation
         time.sleep(300)

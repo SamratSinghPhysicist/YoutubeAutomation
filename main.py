@@ -168,20 +168,18 @@ def main():
     try:  
         email = generate_gmail()
         print(f"\nProcessing account: {email}")
-        try:
-            if account_maker_zebracat(email):
-                time.sleep(5)
-                if login_zebracat(email):
-                    accounts_data[f"{email}"] = "Study@123"
-                    with open("zebracat_accounts_data.json", "w") as json_file:
-                        json.dump(accounts_data, json_file, indent=4)
-                    print(f"Account {email} successfully set up and saved")
-                else:
-                    print(f"Login failed for account {email}")
+
+        if account_maker_zebracat(email):
+            time.sleep(5)
+            if login_zebracat(email):
+                accounts_data[f"{email}"] = "Study@123"
+                with open("zebracat_accounts_data.json", "w") as json_file:
+                    json.dump(accounts_data, json_file, indent=4)
+                print(f"Account {email} successfully set up and saved")
             else:
-                print(f"Account creation Failed on zebracat.ai for account {email}")
-        except Exception as e:
-            print(f"Error in account creation for {email} on zebracat.ai: {e}")
+                print(f"Login failed for account {email}")
+        else:
+            print(f"Account creation Failed on zebracat.ai for account {email}")
         
         try:
             create_video_zebracat(email, video_title)
