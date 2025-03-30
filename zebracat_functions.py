@@ -347,10 +347,94 @@ def create_video_zebracat(email, video_title):
         driver.get("https://studio.zebracat.ai/")
         
         print(f"Login successful with account {email} on zebracat.ai")
-        print(f"Trying to create video with Email: {email} on zebracat.ai on the topic: {video_title}")
+        
+        # Generate sample video first
+        print("Starting the process to generate sample video...")
+        
+        # Try to click on Black Holes & Supernovas option with retry logic
+        max_attempts = 10
+        for attempt in range(max_attempts):
+            try:
+                print(f"Attempt {attempt+1}: Trying to click on 'Black Holes & Supernovas' option")
+                black_holes_option = WebDriverWait(driver, 20).until(
+                    EC.element_to_be_clickable((By.XPATH, "//p[contains(@class, 'sc-iapWAC') and contains(text(), 'Black Holes & Supernovas')]"))
+                )
+                black_holes_option.click()
+                print("Successfully clicked on 'Black Holes & Supernovas' option")
+                break
+            except Exception as e:
+                print(f"Failed to find 'Black Holes & Supernovas' option: {e}")
+                if attempt < max_attempts - 1:
+                    print("Clicking on Shuffle button and trying again")
+                    try:
+                        # Fixed XPath for the Shuffle button
+                        shuffle_button = WebDriverWait(driver, 10).until(
+                            EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'normal-text') and contains(text(), 'Shuffle')]"))
+                        )
+                        shuffle_button.click()
+                        print("Clicked on Shuffle button")
+                        time.sleep(2)  # Wait for new options to load
+                    except Exception as shuffle_error:
+                        print(f"Failed to click on Shuffle button: {shuffle_error}")
+                        # Try alternative XPath if the first one fails
+                        try:
+                            shuffle_button = WebDriverWait(driver, 10).until(
+                                EC.element_to_be_clickable((By.XPATH, "//div[text()='Shuffle']"))
+                            )
+                            shuffle_button.click()
+                            print("Clicked on Shuffle button (alternative selector)")
+                            time.sleep(2)
+                        except Exception as alt_error:
+                            print(f"Failed to click on Shuffle button with alternative selector: {alt_error}")
+                else:
+                    print("Maximum attempts reached. Could not find 'Black Holes & Supernovas' option")
+                    raise Exception("Failed to find 'Black Holes & Supernovas' option after multiple attempts")
+        
+        # Click Next Step
+        time.sleep(2)
+        print("Clicking Next Step button")
+        next_step_button = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.ID, ":r0:"))
+        )
+        next_step_button.click()
+        
+        # Click on AI Image
+        time.sleep(2)
+        print("Clicking on AI Image option")
+        ai_image_option = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[contains(@class, 'sc-iapWAC') and contains(text(), 'AI Image')]"))
+        )
+        ai_image_option.click()
+        
+        # Click Next Step again
+        time.sleep(2)
+        print("Clicking Next Step button again")
+        next_step_button2 = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.ID, ":r1:"))
+        )
+        next_step_button2.click()
+        
+        # Click Generate Video
+        time.sleep(5)
+        print("Clicking Generate Video button")
+        generate_video_button = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.ID, ":r2:"))
+        )
+        generate_video_button.click()
+        
+        time.sleep(10)
+        
+        # Navigate back to studio page to create the actual video
+        print("Navigating back to studio page to create the actual video")
+        driver.get("https://studio.zebracat.ai/")
+        time.sleep(10)
+        
+        # Now proceed with creating the actual video
+        print(f"Trying to create actual video with Email: {email} on zebracat.ai on the topic: {video_title}")
 
         # Navigate to the Zebracat studio page
         driver.get("https://studio.zebracat.ai/")
+        time.sleep(10)
 
         # Click on "Create Video" Button
         create_video_button = WebDriverWait(driver, 120).until(
@@ -359,14 +443,14 @@ def create_video_zebracat(email, video_title):
         create_video_button.click()
 
         print("Adding video settings ...")
-
-        # Select Hyperrealism style
+        
+        # Select Realistic style 
         time.sleep(2)
-        print("Clicking hyperrealism option")
-        hyperrealism_option = WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.XPATH, "//p[contains(@class, 'sc-iapWAC') and text()='Hyperrealism']"))
+        print("Clicking Realistic option")
+        realistic_option = WebDriverWait(driver, 120).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[contains(@class, 'sc-iapWAC') and text()='Realistic']"))
         )
-        hyperrealism_option.click()
+        realistic_option.click()
 
         # Wait 2 Seconds and Click "Next Step"
         time.sleep(2)
@@ -374,7 +458,7 @@ def create_video_zebracat(email, video_title):
         next_step_button = driver.find_element(By.ID, ":r0:")
         next_step_button.click()
 
-        # Select "Fun Facts" from Dropdown
+        # Select "Fantasy" from Dropdown
         time.sleep(1)
         print("Opening Story Style Dropdown")
         story_style_combobox = WebDriverWait(driver, 120).until(
@@ -383,9 +467,9 @@ def create_video_zebracat(email, video_title):
         time.sleep(2)
         story_style_combobox.click()
 
-        print("Clicking Fun Facts Option")
+        print("Clicking Fantasy Option")
         fun_facts_option = WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.XPATH, "//li[@data-value='funfacts']"))
+            EC.element_to_be_clickable((By.XPATH, "//li[@data-value='fantasy']"))
         )
         fun_facts_option.click()
 
@@ -407,14 +491,6 @@ def create_video_zebracat(email, video_title):
             EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'title')]//p[contains(text(), '9:16')]"))
         )
         aspect_ratio.click()
-
-        # Click on the slider mark
-        time.sleep(1)
-        print("Selecting Video Length -> 30 Seconds")
-        slider_mark = WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.XPATH, "//span[@data-index='1' and contains(@class, 'MuiSlider-mark')]"))
-        )
-        slider_mark.click()
 
         # Click Change button
         time.sleep(1)
@@ -447,11 +523,11 @@ def create_video_zebracat(email, video_title):
         )
         male_option.click()
 
-        # Select "Raju"
-        print("Selecting Raju's Voice")
-        time.sleep(7)
+        # Select "Madhur's" Voice
+        print("Selecting Madhur's Voice")
+        time.sleep(10)
         voice_option = WebDriverWait(driver, 120).until(
-        EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'py6 main') and contains(text(), 'Raju - Relatable Hindi Voice')]"))
+        EC.element_to_be_clickable((By.XPATH, "//div[contains(@class, 'py6 main') and contains(text(), 'Madhur')]"))
         )
         voice_option.click()
 
@@ -465,13 +541,13 @@ def create_video_zebracat(email, video_title):
         print("Opening dropdown to change video mood to energetic")
         time.sleep(10)
         combobox = WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.XPATH, "//div[@role='combobox' and contains(text(), 'Happy')]"))
+            EC.element_to_be_clickable((By.XPATH, "//div[@role='combobox' and contains(text(), 'Serious')]"))
         )
         combobox.click()
         time.sleep(2)
-        print("Changing video mood to energetic")
+        print("Changing video mood to Suspenseful")
         energetic_option = WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.XPATH, "//li[@data-value='Energetic']"))
+            EC.element_to_be_clickable((By.XPATH, "//li[@data-value='Suspenseful']"))
         )
         energetic_option.click()
 

@@ -138,7 +138,7 @@ def wait_and_send_keys(driver, by, selector, text, timeout=120, description="inp
         logging.error(f"Error entering text in {description}: {str(e)}")
         return False
 
-def upload_to_youtube_selenium(video_file, title, description="Like and Subscribe for more amazing content", email="sam1212yt1@gmail.com", password="Renu@Villa3"):
+def upload_to_youtube_selenium(video_file, title, description="Like and Subscribe for more amazing content", email="sam1212yt2@gmail.com", password="Renu@Villa3"):
     """Upload a video to YouTube using Selenium automation."""
     # Verify video file exists
     if not os.path.exists(video_file):
