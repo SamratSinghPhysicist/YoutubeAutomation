@@ -588,11 +588,30 @@ def create_video_zebracat(email, video_title):
         print("Video generation done. \n Trying to export and process the video for download ...")
         print("Clicking on export button")
         
-        # Using a more specific selector for the export button with SVG
-        export_button = WebDriverWait(driver, 120).until(
-            EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, '_primary-btn') and .//p[contains(text(), 'Export')]]"))
-        )
-        export_button.click()
+        # Using a more specific selector for the export button with SVG and text "Export"
+        try:
+            export_button = WebDriverWait(driver, 120).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, '_primary-btn')]//p[contains(@class, 'text') and text()='Export']/.."))
+            )
+            export_button.click()
+            print("Export button clicked successfully")
+        except Exception as e:
+            print(f"Error finding export button with first selector: {e}")
+            # Try alternative selector
+            try:
+                export_button = WebDriverWait(driver, 30).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and contains(@class, '_primary-btn')]"))
+                )
+                driver.execute_script("arguments[0].click();", export_button)
+                print("Export button clicked with JavaScript")
+            except Exception as js_error:
+                print(f"Error with JavaScript approach: {js_error}")
+                # Final attempt with CSS selector
+                export_button = WebDriverWait(driver, 30).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button._btn._primary-btn"))
+                )
+                driver.execute_script("arguments[0].click();", export_button)
+                print("Export button clicked with CSS selector")
         
         # Click "Prepare Video" with the updated selector
         print("Clicking on Prepare video button")
