@@ -454,11 +454,49 @@ def upload_to_youtube_selenium(video_file, title, description="Like and Subscrib
         # Step 12: Click on Not Made for Kids radio button
         logging.info("Selecting 'Not Made for Kids' option...")
         try:
-            not_for_kids_radio = WebDriverWait(driver, 30).until(
-                EC.element_to_be_clickable((By.ID, "offRadio"))
-            )
-            not_for_kids_radio.click()
-            logging.info("Selected 'Not Made for Kids' option")
+            # Try multiple selectors for the "Not Made for Kids" option
+            not_for_kids_selectors = [
+                "//tp-yt-paper-radio-button[@name='VIDEO_MADE_FOR_KIDS_NOT_MFK']",
+                "//div[@id='radioLabel' and contains(text(), 'No, it')]",
+                "//div[contains(text(), 'No, it') and contains(text(), 'Made for Kids')]",
+                "//tp-yt-paper-radio-button[contains(., 'No, it')]"
+            ]
+            
+            not_for_kids_clicked = False
+            for selector in not_for_kids_selectors:
+                try:
+                    not_for_kids_radio = WebDriverWait(driver, 30).until(
+                        EC.element_to_be_clickable((By.XPATH, selector))
+                    )
+                    not_for_kids_radio.click()
+                    not_for_kids_clicked = True
+                    logging.info(f"Selected 'Not Made for Kids' option using selector: {selector}")
+                    break
+                except Exception as selector_error:
+                    logging.warning(f"Selector {selector} failed: {str(selector_error)}")
+                    continue
+            
+            if not not_for_kids_clicked:
+                # Take screenshot for debugging
+                try:
+                    screenshot_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "debug_kids_selection.png")
+                    driver.save_screenshot(screenshot_path)
+                    logging.info(f"Saved screenshot of kids selection to {screenshot_path}")
+                except Exception as ss_error:
+                    logging.warning(f"Failed to save screenshot: {ss_error}")
+                
+                # Try JavaScript click as last resort
+                try:
+                    driver.execute_script(
+                        "document.querySelector('tp-yt-paper-radio-button[name=\"VIDEO_MADE_FOR_KIDS_NOT_MFK\"]').click();"
+                    )
+                    logging.info("Selected 'Not Made for Kids' option using JavaScript")
+                    not_for_kids_clicked = True
+                except Exception as js_error:
+                    logging.error(f"JavaScript click failed: {str(js_error)}")
+            
+            if not not_for_kids_clicked:
+                raise Exception("Failed to select 'Not Made for Kids' option")
         except Exception as e:
             logging.error(f"Error selecting 'Not Made for Kids' option: {str(e)}")
             # Continue anyway as this might already be selected
