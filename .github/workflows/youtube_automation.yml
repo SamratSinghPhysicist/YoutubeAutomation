@@ -2,10 +2,14 @@ name: YouTube Automation Workflow
 
 on:
   schedule:
-    - cron: '0 4 * * *'
-    - cron: '0 9 * * *'
-    - cron: '0 13 * * *'
-    - cron: '0 17 * * *'
+    - cron: '30 0 * * *'
+    - cron: '30 4 * * *'
+    - cron: '30 8 * * *'
+    - cron: '30 12 * * *'
+    - cron: '30 16 * * *'
+    - cron: '30 20 * * *'
+    
+    
 
   workflow_dispatch:  # Allow manual triggering
 
