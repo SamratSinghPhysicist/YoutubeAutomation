@@ -3,11 +3,8 @@ name: YouTube Automation Workflow
 on:
   schedule:
     - cron: '30 0 * * *'
-    - cron: '30 4 * * *'
-    - cron: '30 8 * * *'
-    - cron: '30 12 * * *'
-    - cron: '30 16 * * *'
-    - cron: '30 20 * * *'
+    - cron: '0 8 * * *'
+    - cron: '0 14 * * *'
     
     
 
