@@ -629,9 +629,6 @@ def create_video_zebracat(email, video_title):
         # Click "More" and Select "Download" with updated selectors
         print("Downloading the video ...")
         
-        # Click "More" and Select "Download" with updated selectors
-        print("Downloading the video ...")
-        
         # Try multiple approaches to find the correct more-icon
         try:
             # First try to find the more-icon near the download section
@@ -656,9 +653,30 @@ def create_video_zebracat(email, video_title):
             # Wait 2 seconds and click on Download option
             time.sleep(2)
             print("Clicking on download option")
-            download_option = WebDriverWait(driver, 30).until(
-                EC.element_to_be_clickable((By.XPATH, "//li[contains(@class, 'sc-dcJsrY')]//span[contains(text(), 'Download')]"))
-            )
+            try:
+                # Using a more precise selector that matches the exact element structure
+                download_option = WebDriverWait(driver, 30).until(
+                    EC.element_to_be_clickable((By.XPATH, "//li[contains(@class, 'sc-dcJsrY') and @role='menuitem']"))
+                )
+                driver.execute_script("arguments[0].click();", download_option)
+                print("Download option clicked successfully using JavaScript")
+            except Exception as e:
+                print(f"First download click attempt failed: {e}")
+                try:
+                    # Alternative approach using the SVG path
+                    download_option = WebDriverWait(driver, 30).until(
+                        EC.element_to_be_clickable((By.XPATH, "//li[@role='menuitem']//svg[contains(@viewBox, '0 0 20 20')]//parent::div//parent::li"))
+                    )
+                    driver.execute_script("arguments[0].click();", download_option)
+                    print("Download option clicked successfully using SVG path approach")
+                except Exception as e2:
+                    print(f"Second download click attempt failed: {e2}")
+                    # Final attempt using the text content
+                    download_option = WebDriverWait(driver, 30).until(
+                        EC.element_to_be_clickable((By.XPATH, "//span[text()='Download']/ancestor::li[@role='menuitem']"))
+                    )
+                    driver.execute_script("arguments[0].click();", download_option)
+                    print("Download option clicked successfully using text content approach")
             download_option.click()
             
         except Exception as e:
